@@ -1,4 +1,4 @@
 backend/dexenv/
-backend/tracker/
+tracker/
 *.env
 *.env
