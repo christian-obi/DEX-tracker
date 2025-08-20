@@ -1,3 +1,4 @@
 backend/dexenv/
 backend/tracker/
 *.env
+*.env
