@@ -2,3 +2,5 @@ backend/dexenv/
 tracker/
 *.env
 *.env
+backend/steps.ipynb
+
