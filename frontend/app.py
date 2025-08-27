@@ -21,7 +21,7 @@ import streamlit as st
 st.set_page_config(page_title="Ethereum DEX Tracker", layout="wide")
 
 # --- Load Data ---
-data_path = Path("/home/realist/projects/DexTracker/backend/Database")
+data_path = Path("backend/Database")
 df_tvl = joblib.load(data_path / "USDT-pairs_tvl.pkl")
 df_volume = joblib.load(data_path / "USDT-pairs_volume.pkl")
 df_fdv = joblib.load(data_path / "USDT-pairs_fdv.pkl")
@@ -114,4 +114,3 @@ df_pools_dex = pd.merge(df_tvl[['name']], df_dex, on="name", how="left")
 dex_counts = df_pools_dex.groupby('dex').size().reset_index(name='num_pools')
 fig_dex = px.bar(dex_counts, x='dex', y='num_pools', color='num_pools', color_continuous_scale="Viridis")
 st.plotly_chart(fig_dex, use_container_width=True)
->>>>>>> d00bf0eb6065a4d822feb082f90503691a3bc387
