@@ -9,7 +9,7 @@ import streamlit as st
 st.set_page_config(page_title="Ethereum DEX Tracker", layout="wide")
 
 # --- Load Data ---
-data_path = Path("/home/realist/projects/DexTracker/backend/Database")
+data_path = Path("backend/Database")
 df_tvl = joblib.load(data_path / "USDT-pairs_tvl.pkl")
 df_volume = joblib.load(data_path / "USDT-pairs_volume.pkl")
 df_fdv = joblib.load(data_path / "USDT-pairs_fdv.pkl")
