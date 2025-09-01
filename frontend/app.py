@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -9,7 +9,6 @@ import streamlit as st
 
 st.set_page_config(page_title="DEX Tracker", layout="wide")
 
-=======
 import joblib
 from pathlib import Path
 import pandas as pd
