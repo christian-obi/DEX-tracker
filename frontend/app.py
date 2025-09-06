@@ -204,8 +204,11 @@ st.markdown(
     <hr>
     <center>
     <b>Built with ❤️ for Web3 analysts • Powered by Ethereum on-chain data</b>  
-    <br>Follow <a href="https://x.com/_christian_obi" target="_blank">@realist</a> for updates
+    <br>
+    Follow <a href="https://x.com/_christian_obi" target="_blank">@christian_obi</a> 
+    and <a href="https://x.com/vhictoirya" target="_blank">@vhictoirya</a> for updates
     </center>
+
     """,
     unsafe_allow_html=True
 )
