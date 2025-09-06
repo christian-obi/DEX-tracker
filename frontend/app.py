@@ -9,7 +9,7 @@ import streamlit as st
 st.set_page_config(page_title="Ethereum DEX Tracker", layout="wide")
 
 # --- Load Data ---
-data_path = Path("backend/Database")
+data_path = Path("/home/realist/projects/DexTracker/backend/Database")
 df_tvl = joblib.load(data_path / "USDT-pairs_tvl.pkl")
 df_volume = joblib.load(data_path / "USDT-pairs_volume.pkl")
 df_fdv = joblib.load(data_path / "USDT-pairs_fdv.pkl")
@@ -18,19 +18,54 @@ df_transactions = joblib.load(data_path / "USDT-pairs_transactions.pkl")
 
 # --- Sidebar: About ---
 with st.sidebar:
-    st.markdown(
+    st.markdown("## 💵 USDT Pool Tracker (Ethereum)")
+    st.write(
         """
-        ### About Ethereum DEX Tracker
-        A tool to monitor decentralized exchange (DEX) activity on Ethereum.
-        - Track real-time swaps
-        - Monitor liquidity pools
-        - Spot volume trends
-        - Analyze token metrics
+        A dashboard for monitoring **Ethereum DEX pools paired with USDT**.  
+
+        **Features:**
+        - 📊 Track pool **TVL (Total Value Locked)**
+        - 🔄 Analyze **turnover ratio & liquidity depth**
+        - 💧 Monitor **pool reserves & metrics**
+        - ⏱️ Spot real-time **pool activity & trends**
+        """
+    )
+
+    st.markdown("---")
+
+    st.markdown("### ⚙️ How it Works")
+    st.write(
+        """
+        - Pools data sourced from **on-chain APIs**  
+        - Metrics computed with **Pandas & Python**  
+        - Interactive charts built with **Streamlit + Plotly**  
+        """
+    )
+
+    st.markdown("---")
+
+    st.markdown("### 👨‍💻 About the Project")
+    st.write(
+        """
+        This tool is designed for **traders, analysts, and researchers**  
+        who want insights into **USDT liquidity pools on Ethereum**.  
+
+        Built with ❤️ by [Realist](https://github.com/christian-obi) and [vhictoirya](https://github.com/vhictoirya).  
+        """
+    )
+
+    st.markdown("---")
+
+    st.markdown("### 📬 Contact & Links")
+    st.write(
+        """
+        - GitHub: [DEX Tracker Repo](https://github.com/christian-obi/DEX-tracker)  
+        - Twitter: [Realist](https://x.com/_christian_obi)  
         """
     )
 
 # --- Main Page ---
-st.title("Ethereum DEX Tracker Dashboard")
+st.title("Ethereum DEX Tracker Dashboard (USDT pairs)")
 
 # --- Total TVL ---
 df_tvl['pair_reserve_in_usd'] = pd.to_numeric(df_tvl['pair_reserve_in_usd'], errors='coerce')
