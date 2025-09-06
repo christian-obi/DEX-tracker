@@ -205,7 +205,7 @@ st.markdown(
     <center>
     <b>Built with ❤️ for Web3 analysts • Powered by Ethereum on-chain data</b>  
     <br>
-    Follow <a href="https://x.com/_christian_obi" target="_blank">@christian_obi</a> 
+    Follow <a href="https://x.com/_christian_obi" target="_blank">@realist</a> 
     and <a href="https://x.com/vhictoirya" target="_blank">@vhictoirya</a> for updates
     </center>
 
