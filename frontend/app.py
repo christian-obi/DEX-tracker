@@ -11,49 +11,53 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS (Glassmorphism / 3D effect + larger tabs) ---
+# --- Custom CSS (cloud blue + adaptive text) ---
 st.markdown("""
     <style>
+        /* Background */
         .stApp {
-            background: linear-gradient(135deg, #f0f5ff, #e6f7ff);
-            color: #1c1c1c;
+            background: linear-gradient(135deg, #cce6ff, #e6f2ff);
             font-family: "Segoe UI", sans-serif;
+            color: #1c1c1c;
         }
+
+        /* Ensure text always visible in light/dark */
+        h1, h2, h3, h4, h5, h6, p, div, span {
+            color: #1a1a1a !important;
+        }
+
+        /* Metrics */
         div[data-testid="stMetricValue"] {
             font-size: 1.8rem;
             font-weight: 600;
-            color: #0056b3;
+            color: #004080 !important;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
+
+        /* Sidebar styling */
         section[data-testid="stSidebar"] {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             border-radius: 12px;
+            color: #1a1a1a !important;
         }
-        h1, h2, h3 {
-            color: #003366 !important;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        .block-container {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-        }
-        /* Make tabs bigger */
+
+        /* Tabs */
         button[data-baseweb="tab"] > div {
             font-size: 1.2rem !important;
             font-weight: 600 !important;
             padding: 14px 18px !important;
-            border-radius: 10px !important;
         }
         button[data-baseweb="tab"] {
-            background: rgba(255, 255, 255, 0.8) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+            border-radius: 10px !important;
         }
         button[data-baseweb="tab"]:hover {
-            background: #cce6ff !important;
+            background: #b3d9ff !important;
         }
         button[data-baseweb="tab"][aria-selected="true"] {
-            background: #80bfff !important;
+            background: #3399ff !important;
             color: white !important;
         }
     </style>
@@ -94,14 +98,14 @@ with st.sidebar:
 # --- Hero Section ---
 st.markdown(
     """
-    <div style="background: rgba(255,255,255,0.8);
+    <div style="background: rgba(255,255,255,0.9);
                 backdrop-filter: blur(15px);
                 padding:20px;
                 border-radius:15px;
                 box-shadow:0 8px 18px rgba(0,0,0,0.15);
                 margin-bottom:25px;">
         <h1 style="color:#003366;">💵 Ethereum USDT Pool Tracker</h1>
-        <p style="color:#333;">
+        <p style="color:#1a1a1a;">
         Monitor Ethereum liquidity pools paired with <b>USDT</b>:  
         🔹 Track TVL • 🔹 Volume • 🔹 Turnover • 🔹 Traders
         </p>
@@ -208,7 +212,6 @@ st.markdown(
     Follow <a href="https://x.com/_christian_obi" target="_blank">@realist</a> 
     and <a href="https://x.com/vhictoirya" target="_blank">@vhictoirya</a> for updates
     </center>
-
     """,
     unsafe_allow_html=True
 )
