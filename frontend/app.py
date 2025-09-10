@@ -12,12 +12,67 @@ st.set_page_config(page_title="DEX Tracker", layout="wide")
 import joblib
 from pathlib import Path
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import streamlit as st
 
 # --- Page Config ---
-st.set_page_config(page_title="Ethereum DEX Tracker", layout="wide")
+st.set_page_config(
+    page_title="Ethereum USDT Pool Tracker",
+    page_icon="💵",
+    layout="wide"
+)
+
+# --- Custom CSS (cloud blue + adaptive text) ---
+st.markdown("""
+    <style>
+        /* Background */
+        .stApp {
+            background: linear-gradient(135deg, #cce6ff, #e6f2ff);
+            font-family: "Segoe UI", sans-serif;
+            color: #1c1c1c;
+        }
+
+        /* Ensure text always visible in light/dark */
+        h1, h2, h3, h4, h5, h6, p, div, span {
+            color: #1a1a1a !important;
+        }
+
+        /* Metrics */
+        div[data-testid="stMetricValue"] {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #004080 !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Sidebar styling */
+        section[data-testid="stSidebar"] {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            color: #1a1a1a !important;
+        }
+
+        /* Tabs */
+        button[data-baseweb="tab"] > div {
+            font-size: 1.2rem !important;
+            font-weight: 600 !important;
+            padding: 14px 18px !important;
+        }
+        button[data-baseweb="tab"] {
+            background: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+            border-radius: 10px !important;
+        }
+        button[data-baseweb="tab"]:hover {
+            background: #b3d9ff !important;
+        }
+        button[data-baseweb="tab"][aria-selected="true"] {
+            background: #3399ff !important;
+            color: white !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- Load Data ---
 data_path = Path("backend/Database")
@@ -27,85 +82,125 @@ df_fdv = joblib.load(data_path / "USDT-pairs_fdv.pkl")
 df_dex = joblib.load(data_path / "USDT-pairs_dex.pkl")
 df_transactions = joblib.load(data_path / "USDT-pairs_transactions.pkl")
 
-# --- Sidebar: About ---
+# --- Sidebar ---
 with st.sidebar:
-    st.markdown(
+    st.markdown("## 💵 USDT Pool Tracker")
+    st.write(
         """
-        ### About Ethereum DEX Tracker
-        A tool to monitor decentralized exchange (DEX) activity on Ethereum.
-        - Track real-time swaps
-        - Monitor liquidity pools
-        - Spot volume trends
-        - Analyze token metrics
+        Track **Ethereum DEX pools paired with USDT**  
+
+        🔹 **Features:**  
+        - 📊 Pool TVL (Total Value Locked)  
+        - 🔄 Turnover ratio  
+        - 💧 Pool reserves & utilization  
+        - 👥 Traders & activity  
         """
     )
 
-# --- Main Page ---
-st.title("Ethereum DEX Tracker Dashboard")
+    st.markdown("---")
+    st.markdown("### ⚙️ Data Sources")
+    st.write("On-chain APIs + Python (Pandas, Plotly, Streamlit)")
+    st.markdown("---")
+    st.markdown("### 👨‍💻 Authors")
+    st.write("Built with ❤️ by [Realist](https://github.com/christian-obi) & [vhictoirya](https://github.com/vhictoirya)")
+    st.markdown("---")
+    st.markdown("🔗 [GitHub Repo](https://github.com/christian-obi/DEX-tracker)")
 
-# --- Total TVL ---
+# --- Hero Section ---
+st.markdown(
+    """
+    <div style="background: rgba(255,255,255,0.9);
+                backdrop-filter: blur(15px);
+                padding:20px;
+                border-radius:15px;
+                box-shadow:0 8px 18px rgba(0,0,0,0.15);
+                margin-bottom:25px;">
+        <h1 style="color:#003366;">💵 Ethereum USDT Pool Tracker</h1>
+        <p style="color:#1a1a1a;">
+        Monitor Ethereum liquidity pools paired with <b>USDT</b>:  
+        🔹 Track TVL • 🔹 Volume • 🔹 Turnover • 🔹 Traders
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- Preprocess ---
 df_tvl['pair_reserve_in_usd'] = pd.to_numeric(df_tvl['pair_reserve_in_usd'], errors='coerce')
-total_tvl = df_tvl['pair_reserve_in_usd'].sum()
-st.metric("Total TVL (USD)", f"${total_tvl:,.2f}")
-
-# --- Top Pools by TVL ---
-st.subheader("Top Pools by TVL")
-df_sorted_tvl = df_tvl.sort_values("pair_reserve_in_usd", ascending=False)
-fig_tvl = px.bar(df_sorted_tvl, x="name", y="pair_reserve_in_usd",
-                 labels={"pair_reserve_in_usd": "TVL (USD)", "name": "Pool"},
-                 color="pair_reserve_in_usd", color_continuous_scale="Greens")
-st.plotly_chart(fig_tvl, use_container_width=True)
-
-# --- Total Volume ---
+df_fdv['fdv_usd'] = pd.to_numeric(df_fdv['fdv_usd'], errors='coerce')
 volume_cols = ['vol_5m', 'vol_15m', 'vol_30m', 'vol_1h', 'vol_6h', 'vol_24h']
 df_volume[volume_cols] = df_volume[volume_cols].apply(pd.to_numeric, errors='coerce')
+
+# --- KPIs ---
+total_tvl = df_tvl['pair_reserve_in_usd'].sum()
 total_volume = df_volume[volume_cols].sum().sum()
-st.metric("Total Volume (USD)", f"${total_volume:,.2f}")
+avg_turnover = (df_volume['vol_24h'] / df_tvl['pair_reserve_in_usd']).mean()
 
-# --- Volume by Pool ---
-st.subheader("Volume per USDT Pool")
-df_volume_melted = df_volume.melt(id_vars="name", value_vars=volume_cols,
-                                  var_name="Time Window", value_name="Volume (USD)")
-fig_vol = px.bar(df_volume_melted, x="name", y="Volume (USD)", color="Time Window")
-st.plotly_chart(fig_vol, use_container_width=True)
+col1, col2, col3 = st.columns(3)
+col1.metric("🌊 Total TVL", f"${total_tvl:,.0f}")
+col2.metric("📈 Total Volume", f"${total_volume:,.0f}")
+col3.metric("🔄 Avg Turnover", f"{avg_turnover:.2f}x")
 
-# --- Turnover Ratio ---
-st.subheader("Turnover Ratio (24h Volume / TVL)")
-df = pd.merge(df_volume[['name','vol_24h']], df_tvl[['name','pair_reserve_in_usd']], on="name")
-df["turnover_ratio"] = df.apply(lambda x: x["vol_24h"]/x["pair_reserve_in_usd"]
-                                if x["pair_reserve_in_usd"]>0 else None, axis=1)
-fig_turnover = px.bar(df, x="name", y="turnover_ratio", color="turnover_ratio",
-                      color_continuous_scale="Blues", labels={"turnover_ratio":"Turnover Ratio"})
-st.plotly_chart(fig_turnover, use_container_width=True)
+# --- Tabs for Charts ---
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "📊 TVL",
+    "📈 Volume",
+    "🔄 Turnover",
+    "👥 Traders",
+    "🏦 DEX Overview"
+])
 
-# --- Liquidity Utilization ---
-st.subheader("Liquidity Utilization (TVL / FDV)")
-df_fdv = df_fdv[['name','fdv_usd']]
-df_fdv['fdv_usd'] = pd.to_numeric(df_fdv['fdv_usd'], errors='coerce')
-df_liquidity = pd.merge(df_tvl[['name','pair_reserve_in_usd']], df_fdv, on="name")
-df_liquidity['liquidity_utilization'] = df_liquidity.apply(
-    lambda x: x['pair_reserve_in_usd']/x['fdv_usd'] if x['fdv_usd']>0 else None, axis=1)
-fig_liquidity = px.bar(df_liquidity, x="name", y="liquidity_utilization",
-                       color="liquidity_utilization", color_continuous_scale="Oranges",
-                       labels={"liquidity_utilization":"Liquidity Utilization"})
-st.plotly_chart(fig_liquidity, use_container_width=True)
+# TVL
+with tab1:
+    st.subheader("Top Pools by TVL")
+    df_sorted_tvl = df_tvl.sort_values("pair_reserve_in_usd", ascending=False)
+    fig_tvl = px.bar(df_sorted_tvl, x="name", y="pair_reserve_in_usd",
+                     labels={"pair_reserve_in_usd": "TVL (USD)", "name": "Pool"},
+                     color="pair_reserve_in_usd", color_continuous_scale="Blues")
+    st.plotly_chart(fig_tvl, use_container_width=True)
 
-# --- Traders Summary ---
-st.subheader("Traders Summary")
-buy_cols = ['buys_5m', 'buys_15m', 'buys_1h', 'buys_24h']
-sell_cols = ['sells_5m', 'sells_15m', 'sells_1h', 'sells_24h']
-buyer_cols = ['buyers_5m', 'buyers_15m', 'buyers_1h', 'buyers_24h']
-seller_cols = ['sellers_5m', 'sellers_15m', 'sellers_1h', 'sellers_24h']
+# Volume
+with tab2:
+    st.subheader("Volume per Pool")
+    df_volume_melted = df_volume.melt(
+        id_vars="name", value_vars=volume_cols,
+        var_name="Time Window", value_name="Volume (USD)"
+    )
+    fig_vol = px.bar(df_volume_melted, x="name", y="Volume (USD)", color="Time Window")
+    st.plotly_chart(fig_vol, use_container_width=True)
 
-df_transactions[buy_cols + sell_cols + buyer_cols + seller_cols] = df_transactions[buy_cols + sell_cols + buyer_cols + seller_cols].apply(pd.to_numeric, errors='coerce')
-df_traders = pd.DataFrame({
-    "name": df_transactions["name"],
-    "total_buys": df_transactions[buy_cols].sum(axis=1),
-    "total_sells": df_transactions[sell_cols].sum(axis=1),
-    "total_buyers": df_transactions[buyer_cols].sum(axis=1, skipna=True),
-    "total_sellers": df_transactions[seller_cols].sum(axis=1, skipna=True),
-})
-st.dataframe(df_traders)
+# Turnover
+with tab3:
+    st.subheader("Turnover Ratio (24h Volume / TVL)")
+    df_turnover = pd.merge(df_volume[['name','vol_24h']], df_tvl[['name','pair_reserve_in_usd']], on="name")
+    df_turnover["turnover_ratio"] = df_turnover.apply(
+        lambda x: x["vol_24h"]/x["pair_reserve_in_usd"] if x["pair_reserve_in_usd"]>0 else None, axis=1
+    )
+    fig_turnover = px.bar(
+        df_turnover, x="name", y="turnover_ratio", color="turnover_ratio",
+        color_continuous_scale="Teal", labels={"turnover_ratio":"Turnover Ratio"}
+    )
+    st.plotly_chart(fig_turnover, use_container_width=True)
+
+# Traders
+with tab4:
+    st.subheader("Traders Summary")
+    buy_cols = ['buys_5m', 'buys_15m', 'buys_1h', 'buys_24h']
+    sell_cols = ['sells_5m', 'sells_15m', 'sells_1h', 'sells_24h']
+    buyer_cols = ['buyers_5m', 'buyers_15m', 'buyers_1h', 'buyers_24h']
+    seller_cols = ['sellers_5m', 'sellers_15m', 'sellers_1h', 'sellers_24h']
+
+    df_transactions[buy_cols + sell_cols + buyer_cols + seller_cols] = df_transactions[
+        buy_cols + sell_cols + buyer_cols + seller_cols].apply(pd.to_numeric, errors='coerce')
+
+    df_traders = pd.DataFrame({
+        "name": df_transactions["name"],
+        "total_buys": df_transactions[buy_cols].sum(axis=1),
+        "total_sells": df_transactions[sell_cols].sum(axis=1),
+        "total_buyers": df_transactions[buyer_cols].sum(axis=1, skipna=True),
+        "total_sellers": df_transactions[seller_cols].sum(axis=1, skipna=True),
+    })
+    st.dataframe(df_traders)
 
 # --- DEX Pool Counts ---
 st.subheader("Number of Pools per DEX")
