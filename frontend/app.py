@@ -1,3 +1,14 @@
+
+from pathlib import Path
+import pandas as pd
+import numpy as np
+import joblib
+import plotly.express as px
+import matplotlib.pyplot as plt
+import streamlit as st
+
+st.set_page_config(page_title="DEX Tracker", layout="wide")
+
 import joblib
 from pathlib import Path
 import pandas as pd
@@ -191,27 +202,9 @@ with tab4:
     })
     st.dataframe(df_traders)
 
-# DEX Overview
-with tab5:
-    st.subheader("Number of Pools per DEX")
-    df_pools_dex = pd.merge(df_tvl[['name']], df_dex, on="name", how="left")
-    dex_counts = df_pools_dex.groupby('dex').size().reset_index(name='num_pools')
-    fig_dex = px.bar(
-        dex_counts, x='dex', y='num_pools',
-        color='num_pools', color_continuous_scale="Viridis"
-    )
-    st.plotly_chart(fig_dex, use_container_width=True)
-
-# --- Footer ---
-st.markdown(
-    """
-    <hr>
-    <center>
-    <b>Built with ❤️ for Web3 analysts • Powered by Ethereum on-chain data</b>  
-    <br>
-    Follow <a href="https://x.com/_christian_obi" target="_blank">@realist</a> 
-    and <a href="https://x.com/vhictoirya" target="_blank">@vhictoirya</a> for updates
-    </center>
-    """,
-    unsafe_allow_html=True
-)
+# --- DEX Pool Counts ---
+st.subheader("Number of Pools per DEX")
+df_pools_dex = pd.merge(df_tvl[['name']], df_dex, on="name", how="left")
+dex_counts = df_pools_dex.groupby('dex').size().reset_index(name='num_pools')
+fig_dex = px.bar(dex_counts, x='dex', y='num_pools', color='num_pools', color_continuous_scale="Viridis")
+st.plotly_chart(fig_dex, use_container_width=True)
